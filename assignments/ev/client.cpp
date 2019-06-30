@@ -19,12 +19,13 @@ int main() {
   std::vector<double> a2{9, 0, 8, 6, 7};
   EuclideanVector e{a2.begin(), a2.end()};
 
-  /*
+
   // use the copy constructor
   EuclideanVector f{e};
 
+
   std::cout << a.GetNumDimensions() << ": " << a << '\n';
-  std::cout << "D1:" << b.at(1) << " " << b << '\n';
+  /*std::cout << "D1:" << b.at(1) << " " << b << '\n';
   std::cout << c << " Euclidean Norm = " << c.GetEuclideanNorm() << '\n';
   std::cout << d << " Unit Vector: " << d.CreateUnitVector()
             << " L = " << d.CreateUnitVector().GetEuclideanNorm() << '\n';

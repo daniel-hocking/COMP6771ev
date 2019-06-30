@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 class EuclideanVectorError : public std::exception {
  public:
@@ -15,10 +16,25 @@ class EuclideanVectorError : public std::exception {
 
 class EuclideanVector {
  public:
+  // Constructors
   EuclideanVector(): EuclideanVector{1} {}
   explicit EuclideanVector(int i): EuclideanVector{i, 0.0} {}
   EuclideanVector(int i, double m);
   EuclideanVector(std::vector<double>::const_iterator b, std::vector<double>::const_iterator e);
+  // Copy constructor
+  EuclideanVector(const EuclideanVector& original);
+
+  // Copy assignment
+  EuclideanVector& operator=(const EuclideanVector& original);
+
+  // Move constructor
+  EuclideanVector(EuclideanVector&& original) noexcept = default;
+
+  // Destructor
+  ~EuclideanVector() = default;
+
+  int GetNumDimensions() const;
+
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
  private:
   std::unique_ptr<double[]> magnitudes_;
