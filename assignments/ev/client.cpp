@@ -25,7 +25,7 @@ int main() {
 
 
   std::cout << a.GetNumDimensions() << ": " << a << '\n';
-  /*std::cout << "D1:" << b.at(1) << " " << b << '\n';
+  std::cout << "D1:" << b.at(1) << " " << b << '\n';
   std::cout << c << " Euclidean Norm = " << c.GetEuclideanNorm() << '\n';
   std::cout << d << " Unit Vector: " << d.CreateUnitVector()
             << " L = " << d.CreateUnitVector().GetEuclideanNorm() << '\n';
@@ -35,7 +35,7 @@ int main() {
   // test the move constructor
   EuclideanVector g = std::move(f);
   std::cout << g << '\n';
-  std::cout << f << '\n';
+  /*std::cout << f << '\n';
 
   // try operator overloading
   e += d;

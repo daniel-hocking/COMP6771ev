@@ -33,7 +33,11 @@ class EuclideanVector {
   // Destructor
   ~EuclideanVector() = default;
 
+  // Methods
+  double at(int i) const;
   int GetNumDimensions() const;
+  double GetEuclideanNorm() const;
+  EuclideanVector CreateUnitVector();
 
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
  private:
