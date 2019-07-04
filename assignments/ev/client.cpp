@@ -35,10 +35,10 @@ int main() {
   // test the move constructor
   EuclideanVector g = std::move(f);
   std::cout << g << '\n';
-  /*std::cout << f << '\n';
+  std::cout << f << '\n';
 
   // try operator overloading
-  e += d;
+  /*e += d;
   std::cout << e << '\n';
 
   EuclideanVector h = e - g;

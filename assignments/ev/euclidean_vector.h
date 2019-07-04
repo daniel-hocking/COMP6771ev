@@ -22,22 +22,22 @@ class EuclideanVector {
   EuclideanVector(int i, double m);
   EuclideanVector(std::vector<double>::const_iterator b, std::vector<double>::const_iterator e);
   // Copy constructor
-  EuclideanVector(const EuclideanVector& original);
+  EuclideanVector(const EuclideanVector& original) noexcept;
+  // Move constructor
+  EuclideanVector(EuclideanVector&& original) noexcept: magnitudes_{std::move(original.magnitudes_)}, num_dim_{std::move(original.num_dim_)} {}
 
   // Copy assignment
   EuclideanVector& operator=(const EuclideanVector& original);
 
-  // Move constructor
-  EuclideanVector(EuclideanVector&& original) noexcept = default;
-
   // Destructor
-  ~EuclideanVector() = default;
+  ~EuclideanVector() noexcept = default;
 
   // Methods
   double at(int i) const;
   int GetNumDimensions() const;
   double GetEuclideanNorm() const;
   EuclideanVector CreateUnitVector();
+  bool MovedObject() const noexcept;
 
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
  private:

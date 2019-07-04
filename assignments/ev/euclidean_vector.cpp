@@ -20,7 +20,7 @@ EuclideanVector::EuclideanVector(std::vector<double>::const_iterator b, std::vec
   }
 }
 
-EuclideanVector::EuclideanVector(const EuclideanVector& original)
+EuclideanVector::EuclideanVector(const EuclideanVector& original) noexcept
     : magnitudes_{std::make_unique<double[]>(original.GetNumDimensions())}, num_dim_{original.GetNumDimensions()} {
   for(int j = 0; j < this->GetNumDimensions(); j++) {
     magnitudes_[j] = original.magnitudes_[j];
@@ -76,9 +76,13 @@ EuclideanVector EuclideanVector::CreateUnitVector() {
   return e;
 }
 
+bool EuclideanVector::MovedObject() const noexcept {
+  return this->magnitudes_ == nullptr;
+}
+
 std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) {
   os << "[";
-  if (v.GetNumDimensions() > 0) {
+  if (!v.MovedObject() && v.GetNumDimensions() > 0) {
     for(int j = 0; j < v.GetNumDimensions(); j++) {
       if(j > 0) {
         os << " ";
