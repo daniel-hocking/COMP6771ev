@@ -1,15 +1,17 @@
-// TODO(you): Include header guards
+#ifndef ASSIGNMENTS_EV_EUCLIDEAN_VECTOR_H_
+#define ASSIGNMENTS_EV_EUCLIDEAN_VECTOR_H_
 
 #include <exception>
-#include <string>
-#include <memory>
-#include <vector>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 class EuclideanVectorError : public std::exception {
  public:
   explicit EuclideanVectorError(const std::string& what) : what_(what) {}
-  const char* what() const noexcept{ return what_.c_str(); }
+  const char* what() const noexcept { return what_.c_str(); }
+
  private:
   std::string what_;
 };
@@ -17,14 +19,14 @@ class EuclideanVectorError : public std::exception {
 class EuclideanVector {
  public:
   // Constructors
-  EuclideanVector(): EuclideanVector{1} {}
-  explicit EuclideanVector(int i): EuclideanVector{i, 0.0} {}
+  EuclideanVector() : EuclideanVector{1} {}
+  explicit EuclideanVector(int i) : EuclideanVector{i, 0.0} {}
   EuclideanVector(int i, double m);
   EuclideanVector(std::vector<double>::const_iterator b, std::vector<double>::const_iterator e);
   // Copy constructor
   EuclideanVector(const EuclideanVector& original) noexcept;
   // Move constructor
-  EuclideanVector(EuclideanVector&& original) noexcept: magnitudes_{std::move(original.magnitudes_)}, num_dim_{std::move(original.num_dim_)} {}
+  EuclideanVector(EuclideanVector&& original) noexcept = default;
 
   // Copy assignment
   EuclideanVector& operator=(const EuclideanVector& original);
@@ -40,7 +42,10 @@ class EuclideanVector {
   bool MovedObject() const noexcept;
 
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
+
  private:
   std::unique_ptr<double[]> magnitudes_;
   int num_dim_;
 };
+
+#endif  // ASSIGNMENTS_EV_EUCLIDEAN_VECTOR_H_
