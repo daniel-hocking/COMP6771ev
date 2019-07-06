@@ -1,8 +1,9 @@
 #include "assignments/ev/euclidean_vector.h"
 
 #include <algorithm>  // Look at these - they are helpful https://en.cppreference.com/w/cpp/algorithm
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <utility>
 
 EuclideanVector::EuclideanVector(const int i, const double m) noexcept
   : magnitudes_{std::make_unique<double[]>(i)}, num_dim_{i} {
@@ -31,8 +32,7 @@ EuclideanVector::EuclideanVector(const EuclideanVector& original) noexcept
 }
 
 EuclideanVector::EuclideanVector(EuclideanVector&& original) noexcept
-    : magnitudes_{std::move(original.magnitudes_)},
-      num_dim_{original.GetNumDimensions()} {
+  : magnitudes_{std::move(original.magnitudes_)}, num_dim_{original.GetNumDimensions()} {
   original.num_dim_ = 0;
 }
 
@@ -65,9 +65,10 @@ double& EuclideanVector::operator[](const int i) {
 }
 
 void CheckDimMatches(int x, int y) {
-  if ((x != y)) {
+  if (x != y) {
     throw EuclideanVectorError{std::string{"Dimensions of LHS("} + std::to_string(x) +
-        std::string{") and RHS("} + std::to_string(y) + std::string{") do not match"}};
+                               std::string{") and RHS("} + std::to_string(y) +
+                               std::string{") do not match"}};
   }
 }
 
@@ -75,7 +76,7 @@ EuclideanVector& EuclideanVector::OperatorAddSubEquals(const EuclideanVector& rh
   CheckDimMatches(this->GetNumDimensions(), rhs.GetNumDimensions());
 
   for (int j = 0; j < this->GetNumDimensions(); j++) {
-    if(add) {
+    if (add) {
       magnitudes_[j] += rhs[j];
     } else {
       magnitudes_[j] -= rhs[j];
@@ -102,7 +103,7 @@ EuclideanVector& EuclideanVector::operator*=(const int scalar) noexcept {
 }
 
 EuclideanVector& EuclideanVector::operator/=(const int scalar) {
-  if ((scalar == 0)) {
+  if (scalar == 0) {
     throw EuclideanVectorError{"Invalid vector division by 0"};
   }
 
@@ -140,7 +141,7 @@ double EuclideanVector::at(const int i) const {
 double& EuclideanVector::at(const int i) {
   if (i < 0 || i >= this->GetNumDimensions()) {
     throw EuclideanVectorError{std::string{"Index "} + std::to_string(i) +
-        std::string{" is not valid for this EuclideanVector object"}};
+                               std::string{" is not valid for this EuclideanVector object"}};
   }
   return magnitudes_[i];
 }
@@ -180,12 +181,28 @@ EuclideanVector EuclideanVector::CreateUnitVector() {
   return e;
 }
 
+bool operator==(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept {
+  if (lhs.GetNumDimensions() != rhs.GetNumDimensions()) {
+    return false;
+  }
+  for (int j = 0; j < lhs.GetNumDimensions(); j++) {
+    if (lhs[j] != rhs[j]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept {
+  return !(lhs == rhs);
+}
+
 EuclideanVector OperatorAddSub(const EuclideanVector& lhs, const EuclideanVector& rhs, bool add) {
   CheckDimMatches(lhs.GetNumDimensions(), rhs.GetNumDimensions());
 
   EuclideanVector ev(lhs.GetNumDimensions());
   for (int j = 0; j < ev.GetNumDimensions(); j++) {
-    if(add) {
+    if (add) {
       ev[j] = lhs[j] + rhs[j];
     } else {
       ev[j] = lhs[j] - rhs[j];
@@ -229,6 +246,19 @@ EuclideanVector operator*(const EuclideanVector& lhs, int scalar) noexcept {
 
 EuclideanVector operator*(int scalar, const EuclideanVector& lhs) noexcept {
   return OperatorMultiScalar(lhs, scalar);
+}
+
+EuclideanVector operator/(const EuclideanVector& lhs, int scalar) {
+  if (scalar == 0) {
+    throw EuclideanVectorError{"Invalid vector division by 0"};
+  }
+
+  EuclideanVector ev = lhs;
+  for (int j = 0; j < ev.GetNumDimensions(); j++) {
+    ev.magnitudes_[j] /= scalar;
+  }
+
+  return ev;
 }
 
 std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) {

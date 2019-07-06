@@ -3,10 +3,10 @@
 
 #include <exception>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
-#include <list>
 
 class EuclideanVectorError : public std::exception {
  public:
@@ -23,7 +23,8 @@ class EuclideanVector {
   EuclideanVector() noexcept : EuclideanVector{1} {}
   explicit EuclideanVector(const int i) noexcept : EuclideanVector{i, 0.0} {}
   EuclideanVector(int i, double m) noexcept;
-  EuclideanVector(std::vector<double>::const_iterator b, std::vector<double>::const_iterator e) noexcept;
+  EuclideanVector(std::vector<double>::const_iterator b,
+                  std::vector<double>::const_iterator e) noexcept;
   // Copy constructor
   EuclideanVector(const EuclideanVector& original) noexcept;
   // Move constructor
@@ -52,13 +53,14 @@ class EuclideanVector {
   EuclideanVector CreateUnitVector();
 
   // Friends
-  //==
-  //!=
+  friend bool operator==(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
+  friend bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
   friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
   friend EuclideanVector operator*(const EuclideanVector& lhs, int scalar) noexcept;
   friend EuclideanVector operator*(int scalar, const EuclideanVector& lhs) noexcept;
+  friend EuclideanVector operator/(const EuclideanVector& lhs, int scalar);
   friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
 
  private:
@@ -67,7 +69,8 @@ class EuclideanVector {
 
   friend void CheckDimMatches(int x, int y);
   EuclideanVector& OperatorAddSubEquals(const EuclideanVector& rhs, bool add);
-  friend EuclideanVector OperatorAddSub(const EuclideanVector& lhs, const EuclideanVector& rhs, bool add);
+  friend EuclideanVector
+  OperatorAddSub(const EuclideanVector& lhs, const EuclideanVector& rhs, bool add);
   friend EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, int scalar) noexcept;
 };
 
