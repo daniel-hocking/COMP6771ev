@@ -36,7 +36,7 @@ int main() {
   std::cout << f << '\n';
 
   // try operator overloading
-  /*e += d;
+  e += d;
   std::cout << e << '\n';
 
   EuclideanVector h = e - g;
@@ -46,7 +46,7 @@ int main() {
   h *= 2;
   std::cout << h << '\n';
 
-  EuclideanVector j = b / 2;
+  /*EuclideanVector j = b / 2;
   std::cout << j << '\n';
 
   std::cout << "dot product = " << j * b << '\n';
