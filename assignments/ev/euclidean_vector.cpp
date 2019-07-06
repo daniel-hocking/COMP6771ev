@@ -8,7 +8,7 @@
 EuclideanVector::EuclideanVector(const int i, const double m) noexcept
   : magnitudes_{std::make_unique<double[]>(i)}, num_dim_{i} {
   for (int j = 0; j < this->GetNumDimensions(); j++) {
-    magnitudes_[j] = m;
+    (*this)[j] = m;
   }
 }
 
