@@ -132,36 +132,91 @@ class EuclideanVector {
   /*
    * Equality operators
    */
-  friend bool operator==(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
-  friend bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept;
+  friend bool operator==(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept {
+    if (lhs.GetNumDimensions() != rhs.GetNumDimensions()) {
+      return false;
+    }
+
+    for (int j = 0; j < lhs.GetNumDimensions(); j++) {
+      if (lhs[j] != rhs[j]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  friend bool operator!=(const EuclideanVector& lhs, const EuclideanVector& rhs) noexcept {
+    return !(lhs == rhs);
+  }
 
   /*
    * Add/subtract operators
    */
-  friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs);
-  friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend EuclideanVector operator+(const EuclideanVector& lhs, const EuclideanVector& rhs) {
+    return OperatorAddSub(lhs, rhs, true);
+  }
+  friend EuclideanVector operator-(const EuclideanVector& lhs, const EuclideanVector& rhs) {
+    return OperatorAddSub(lhs, rhs, false);
+  }
 
   /*
    * Dot product multiplication
    * returns a double. E.g., [1 2] * [3 4] = 1 * 3 + 2 * 4 = 11
    */
-  friend double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs);
+  friend double operator*(const EuclideanVector& lhs, const EuclideanVector& rhs) {
+    CheckDimMatches(lhs.GetNumDimensions(), rhs.GetNumDimensions());
+
+    double dot_prod = 0.0;
+    for (int j = 0; j < lhs.GetNumDimensions(); j++) {
+      dot_prod += lhs[j] * rhs[j];
+    }
+
+    return dot_prod;
+  }
 
   /*
    * Multiplication by scalar operators
    */
-  friend EuclideanVector operator*(const EuclideanVector& lhs, int scalar) noexcept;
-  friend EuclideanVector operator*(int scalar, const EuclideanVector& lhs) noexcept;
+  friend EuclideanVector operator*(const EuclideanVector& lhs, int scalar) noexcept {
+    return OperatorMultiScalar(lhs, scalar);
+  }
+  friend EuclideanVector operator*(int scalar, const EuclideanVector& lhs) noexcept {
+    return OperatorMultiScalar(lhs, scalar);
+  }
 
   /*
    * Division by scalar operator
    */
-  friend EuclideanVector operator/(const EuclideanVector& lhs, int scalar);
+  friend EuclideanVector operator/(const EuclideanVector& lhs, int scalar) {
+    if (scalar == 0) {
+      throw EuclideanVectorError{"Invalid vector division by 0"};
+    }
+
+    EuclideanVector ev = lhs;
+    for (int j = 0; j < ev.GetNumDimensions(); j++) {
+      ev.magnitudes_[j] /= scalar;
+    }
+
+    return ev;
+  }
 
   /*
    * Output stream operator
    */
-  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v);
+  friend std::ostream& operator<<(std::ostream& os, const EuclideanVector& v) {
+    os << "[";
+    if (v.GetNumDimensions() > 0) {
+      for (int j = 0; j < v.GetNumDimensions(); j++) {
+        if (j > 0) {
+          os << " ";
+        }
+        os << v.at(j);
+      }
+    }
+    os << "]";
+
+    return os;
+  }
 
   // END FRIENDS
 
@@ -179,7 +234,7 @@ class EuclideanVector {
    * Throws an exception if x and y aren't equal, as in if the number of dimensions doesn't
    * match between LHS and RHS
    */
-  friend void CheckDimMatches(int x, int y);
+  static void CheckDimMatches(int x, int y);
 
   /*
    * Both operator+= and operator-= are essential the same so they can both call same underlying

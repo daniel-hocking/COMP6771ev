@@ -195,3 +195,126 @@ SCENARIO("5. Check that the move constructor returns a EuclideanVector that is a
     }
   }
 }
+
+SCENARIO("6. Check that the copy assignment updates a EuclideanVector to be a copy of the one "
+         "provided") {
+  GIVEN("You have called the copy assignment") {
+    EuclideanVector a;
+    EuclideanVector b;
+    b = a;
+    THEN("Check that b has been set to 1 dimension euclidean vector like a (note by default they "
+         "are the same)") {
+      REQUIRE(b.GetNumDimensions() == 1);
+      CHECK(b.at(0) == a.at(0));
+      REQUIRE_THROWS_WITH(b.at(1), Contains("is not valid for this EuclideanVector object"));
+    }
+
+    EuclideanVector c(3, 5.0);
+    EuclideanVector d(3, 7.5);
+    d = c;
+    THEN("Check that d has been set to copy of euclidean vector const (this time they have the "
+         "same dimensions but different values") {
+      REQUIRE(d.GetNumDimensions() == 3);
+      for (int j = 0; j < d.GetNumDimensions(); ++j) {
+        CHECK(d.at(j) == 5.0);
+      }
+      REQUIRE_THROWS_WITH(d.at(3), Contains("is not valid for this EuclideanVector object"));
+    }
+
+    EuclideanVector e(5, -2.1);
+    EuclideanVector f(2, 4.0);
+    f = e;
+    THEN("Check that f has been set to copy of euclidean vector e (this time with different "
+         "dimensions and values)") {
+      REQUIRE(f.GetNumDimensions() == 5);
+      for (int j = 0; j < f.GetNumDimensions(); ++j) {
+        CHECK(f.at(j) == -2.1);
+      }
+      REQUIRE_THROWS_WITH(f.at(5), Contains("is not valid for this EuclideanVector object"));
+    }
+  }
+}
+
+SCENARIO("7. Check that the move assignment updates a EuclideanVector to be a copy of the one "
+         "provided and leaves original with 0 dimensions (empty)") {
+  GIVEN("You have called the move assignment") {
+    EuclideanVector a;
+    EuclideanVector b;
+    b = std::move(a);
+    THEN("Check that b has been set to 1 dimension euclidean vector like auto (note by default "
+         "they are the same)") {
+      REQUIRE(b.GetNumDimensions() == 1);
+      CHECK(b.at(0) == 0.0);
+      REQUIRE_THROWS_WITH(b.at(1), Contains("is not valid for this EuclideanVector object"));
+    }
+    AND_THEN("Check that a has been set to 0 dimensions") {
+      REQUIRE(a.GetNumDimensions() == 0);
+      REQUIRE_THROWS_WITH(a.at(0), Contains("is not valid for this EuclideanVector object"));
+    }
+
+    EuclideanVector c(3, 5.0);
+    EuclideanVector d(3, 7.5);
+    d = std::move(c);
+    THEN("Check that d has been set to copy of euclidean vector const (this time they have the "
+         "same dimensions but different values)") {
+      REQUIRE(d.GetNumDimensions() == 3);
+      for (int j = 0; j < d.GetNumDimensions(); ++j) {
+        CHECK(d.at(j) == 5.0);
+      }
+      REQUIRE_THROWS_WITH(d.at(3), Contains("is not valid for this EuclideanVector object"));
+    }
+    AND_THEN("Check that c has been set to 0 dimensions") {
+      REQUIRE(c.GetNumDimensions() == 0);
+      REQUIRE_THROWS_WITH(c.at(0), Contains("is not valid for this EuclideanVector object"));
+    }
+
+    EuclideanVector e(5, 7.7);
+    EuclideanVector f(2, 4.0);
+    f = std::move(e);
+    THEN("Check that f has been set to copy of euclidean vector e (this time with different "
+         "dimensions and values)") {
+      REQUIRE(f.GetNumDimensions() == 5);
+      for (int j = 0; j < f.GetNumDimensions(); ++j) {
+        CHECK(f.at(j) == 7.7);
+      }
+      REQUIRE_THROWS_WITH(f.at(5), Contains("is not valid for this EuclideanVector object"));
+    }
+    AND_THEN("Check that e has been set to 0 dimensions") {
+      REQUIRE(e.GetNumDimensions() == 0);
+      REQUIRE_THROWS_WITH(e.at(0), Contains("is not valid for this EuclideanVector object"));
+    }
+  }
+}
+
+SCENARIO("8. Check that the subscript operator works as expected for both access and updates") {
+  GIVEN("You have setup a default 1 dimensional EuclideanVector") {
+    EuclideanVector a;
+    THEN("Check that an index can be accessed") { REQUIRE(a[0] == 0.0); }
+    AND_THEN("Check that an index can be updated") {
+      a[0] = 1.5;
+      REQUIRE(a[0] == 1.5);
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector with multiple values") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    int size = static_cast<int>(l.size());
+    EuclideanVector b{l.begin(), l.end()};
+    THEN("Check that all index can be accessed") {
+      for (int j = 0; j < size; ++j) {
+        REQUIRE(b[j] == l[j]);
+      }
+    }
+    AND_THEN("Check that an index can be updated") {
+      b[2] = 70.5;
+      REQUIRE(b[2] == 70.5);
+    }
+  }
+  AND_GIVEN("You have setup a const EuclideanVector") {
+    const EuclideanVector c(3, 5.0);
+    THEN("Check that all index can be accessed") {
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 5.0);
+      }
+    }
+  }
+}
