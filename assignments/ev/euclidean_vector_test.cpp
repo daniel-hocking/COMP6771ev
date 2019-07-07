@@ -317,4 +317,185 @@ SCENARIO("8. Check that the subscript operator works as expected for both access
       }
     }
   }
+  AND_GIVEN("You have setup a EuclideanVector that you copy assign to a larger EV") {
+    EuclideanVector d(4, 5.0);
+    EuclideanVector e(2, 3.0);
+    e = d;
+    THEN("Check that all index can be accessed") {
+      for (int j = 0; j < 4; ++j) {
+        REQUIRE(e[j] == 5.0);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector that you copy assign to a smaller EV") {
+    EuclideanVector f(4, 5.0);
+    EuclideanVector g(6, 3.0);
+    g = f;
+    THEN("Check that all index can be accessed") {
+      for (int j = 0; j < 4; ++j) {
+        REQUIRE(g[j] == 5.0);
+      }
+    }
+  }
+}
+
+SCENARIO("9. Check that the += and -= operator work as expected") {
+  GIVEN("You have setup two simple EuclideanVector and add second to first") {
+    EuclideanVector a(3, 2.0);
+    EuclideanVector b(3, 3.0);
+    a += b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(a[j] == 5.0);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      a -= b;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(a[j] == 2.0);
+      }
+    }
+  }
+  AND_GIVEN(
+      "You have setup two EuclideanVector with second being negative and add second to first") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(7, -3.0);
+    a += b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(a[j] == 0.0);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      a -= b;
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(a[j] == 3.0);
+      }
+    }
+  }
+  AND_GIVEN("You have setup two complex EuclideanVector and add second to first") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    std::vector<double> l2{3, -1, 3, -7, -9};
+    EuclideanVector b{l2.begin(), l2.end()};
+    a += b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(a[j] == l[j] + l2[j]);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      a -= b;
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(a[j] == l[j]);
+      }
+    }
+  }
+  AND_GIVEN("You have setup two EuclideanVector that have different number of dimensions") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(5, 3.0);
+    THEN("Check that adding results in an exception") {
+      REQUIRE_THROWS_WITH(a += b, Contains("Dimensions of LHS"));
+    }
+    AND_THEN("Check that subtracting b results in an exception") {
+      REQUIRE_THROWS_WITH(a -= b, Contains("Dimensions of LHS"));
+    }
+  }
+}
+
+SCENARIO("10. Check that the *= and /= operator work as expected") {
+  GIVEN("You have setup a EuclideanVector and scalar") {
+    EuclideanVector a(3, 2.0);
+    a *= 3;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(a[j] == 6.0);
+      }
+    }
+    AND_THEN("Check that division results in the original") {
+      a /= 3;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(a[j] == 2.0);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector and negative scalar") {
+    EuclideanVector a(7, 3.0);
+    a *= -5;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(a[j] == -15.0);
+      }
+    }
+    AND_THEN("Check that division results in the original") {
+      a /= -5;
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(a[j] == 3.0);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a complex EuclideanVector and scalar") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    a *= 11;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(a[j] == l[j] * 11);
+      }
+    }
+    AND_THEN("Check that division results in the original") {
+      a /= 11;
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(a[j] == l[j]);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector and scalar of 0") {
+    EuclideanVector a(5, 5.0);
+    a *= 0;
+    THEN("Check that multiplication results in 0") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(a[j] == 0.0);
+      }
+    }
+    AND_THEN("Check that division results in an exception") {
+      REQUIRE_THROWS_WITH(a /= 0, Contains("Invalid vector division by 0"));
+    }
+  }
+}
+
+SCENARIO("11. Check that type conversion operator work as expected") {
+  GIVEN("You have setup a default EuclideanVector") {
+    EuclideanVector a;
+    THEN("Check that conversion to vector is correct") {
+      REQUIRE(static_cast<std::vector<double>>(a) == std::vector<double>{0.0});
+    }
+    AND_THEN("Check that conversion to list is correct") {
+      REQUIRE(static_cast<std::list<double>>(a) == std::list<double>{0.0});
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector") {
+    EuclideanVector a(7, 3.0);
+    THEN("Check that conversion to vector is correct") {
+      REQUIRE(static_cast<std::vector<double>>(a) == std::vector<double>(7, 3.0));
+    }
+    AND_THEN("Check that conversion to list is correct") {
+      REQUIRE(static_cast<std::list<double>>(a) == std::list<double>(7, 3.0));
+    }
+  }
+  AND_GIVEN("You have setup a complex EuclideanVector") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    THEN("Check that conversion to vector is correct") {
+      REQUIRE(static_cast<std::vector<double>>(a) == l);
+    }
+    AND_THEN("Check that conversion to list is correct") {
+      auto ev_list = static_cast<std::list<double>>(a);
+      int index = 0;
+      for (auto it = ev_list.begin(); it != ev_list.end(); ++it) {
+        REQUIRE(*it == l[index]);
+        ++index;
+      }
+    }
+  }
 }
