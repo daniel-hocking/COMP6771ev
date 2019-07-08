@@ -89,8 +89,8 @@ class EuclideanVector {
    */
   EuclideanVector& operator+=(const EuclideanVector&);
   EuclideanVector& operator-=(const EuclideanVector&);
-  EuclideanVector& operator*=(int s) noexcept;
-  EuclideanVector& operator/=(int s);
+  EuclideanVector& operator*=(double s) noexcept;
+  EuclideanVector& operator/=(double s);
 
   /*
    * Explicit type conversions
@@ -177,18 +177,18 @@ class EuclideanVector {
   /*
    * Multiplication by scalar operators
    */
-  friend EuclideanVector operator*(const EuclideanVector& lhs, int scalar) noexcept {
+  friend EuclideanVector operator*(const EuclideanVector& lhs, const double scalar) noexcept {
     return OperatorMultiScalar(lhs, scalar);
   }
-  friend EuclideanVector operator*(int scalar, const EuclideanVector& lhs) noexcept {
+  friend EuclideanVector operator*(const double scalar, const EuclideanVector& lhs) noexcept {
     return OperatorMultiScalar(lhs, scalar);
   }
 
   /*
    * Division by scalar operator
    */
-  friend EuclideanVector operator/(const EuclideanVector& lhs, int scalar) {
-    if (scalar == 0) {
+  friend EuclideanVector operator/(const EuclideanVector& lhs, const double scalar) {
+    if (scalar == 0.0) {
       throw EuclideanVectorError{"Invalid vector division by 0"};
     }
 
@@ -253,7 +253,7 @@ class EuclideanVector {
    * As scalar multiplication can happen in either order it is simpler to put functionality
    * into a separate method that both can use
    */
-  friend EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, int scalar) noexcept;
+  friend EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, double scalar) noexcept;
 
   // END PRIVATE METHODS
 };

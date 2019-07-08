@@ -69,7 +69,7 @@ double& EuclideanVector::operator[](const int i) {
   return magnitudes_[i];
 }
 
-EuclideanVector& EuclideanVector::OperatorAddSubEquals(const EuclideanVector& rhs, bool add) {
+EuclideanVector& EuclideanVector::OperatorAddSubEquals(const EuclideanVector& rhs, const bool add) {
   EuclideanVector::CheckDimMatches(this->GetNumDimensions(), rhs.GetNumDimensions());
 
   for (int j = 0; j < this->GetNumDimensions(); j++) {
@@ -91,7 +91,7 @@ EuclideanVector& EuclideanVector::operator-=(const EuclideanVector& rhs) {
   return this->OperatorAddSubEquals(rhs, false);
 }
 
-EuclideanVector& EuclideanVector::operator*=(const int scalar) noexcept {
+EuclideanVector& EuclideanVector::operator*=(const double scalar) noexcept {
   for (int j = 0; j < this->GetNumDimensions(); j++) {
     magnitudes_[j] *= scalar;
   }
@@ -99,8 +99,8 @@ EuclideanVector& EuclideanVector::operator*=(const int scalar) noexcept {
   return *this;
 }
 
-EuclideanVector& EuclideanVector::operator/=(const int scalar) {
-  if (scalar == 0) {
+EuclideanVector& EuclideanVector::operator/=(const double scalar) {
+  if (scalar == 0.0) {
     throw EuclideanVectorError{"Invalid vector division by 0"};
   }
 
@@ -202,7 +202,7 @@ EuclideanVector OperatorAddSub(const EuclideanVector& lhs, const EuclideanVector
   return ev;
 }
 
-EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, int scalar) noexcept {
+EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, const double scalar) noexcept {
   EuclideanVector ev = lhs;
   for (int j = 0; j < ev.GetNumDimensions(); j++) {
     ev.magnitudes_[j] *= scalar;
@@ -211,7 +211,7 @@ EuclideanVector OperatorMultiScalar(const EuclideanVector& lhs, int scalar) noex
   return ev;
 }
 
-void EuclideanVector::CheckDimMatches(int x, int y) {
+void EuclideanVector::CheckDimMatches(const int x, const int y) {
   if (x != y) {
     throw EuclideanVectorError{std::string("Dimensions of LHS(") + std::to_string(x) +
                                std::string(") and RHS(") + std::to_string(y) +
