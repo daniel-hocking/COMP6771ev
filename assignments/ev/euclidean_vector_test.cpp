@@ -7,6 +7,7 @@
 
 */
 
+#include <sstream>
 #include <utility>
 
 #include "assignments/ev/euclidean_vector.h"
@@ -958,6 +959,53 @@ SCENARIO("19. Check that * and / by scalar works as expected") {
       for (int j = 0; j < 3; ++j) {
         REQUIRE(c[j] == 2.0);
       }
+    }
+  }
+}
+
+SCENARIO("20. Check that << works as expected") {
+  GIVEN("You have setup a simple EuclideanVector and ostringstream") {
+    EuclideanVector a;
+    std::ostringstream os;
+    THEN("Check that result output is correct") {
+      os << a;
+      REQUIRE(os.str() == "[0]");
+    }
+  }
+  AND_GIVEN("You have setup a 0 dimension EuclideanVector and ostringstream") {
+    EuclideanVector a(0);
+    std::ostringstream os;
+    THEN("Check that result output is correct") {
+      os << a;
+      REQUIRE(os.str() == "[]");
+    }
+  }
+  AND_GIVEN("You have setup two EuclideanVector and a ostringstream") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(7, -3.0);
+    std::ostringstream os;
+    THEN("Check that result output is correct") {
+      os << a << " " << b;
+      REQUIRE(os.str() == "[3 3 3 3 3 3 3] [-3 -3 -3 -3 -3 -3 -3]");
+    }
+  }
+  AND_GIVEN("You have setup a complex EuclideanVector and ostringstream") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    std::ostringstream os;
+    THEN("Check that result output is correct") {
+      os << a;
+      REQUIRE(os.str() == "[1 2 3 -5 9]");
+    }
+  }
+  AND_GIVEN("You have setup two EuclideanVector and ostringstream") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(5, 3.0);
+    std::ostringstream os;
+    THEN("Check that move assigning a to b results in the correct outputs") {
+      b = std::move(a);
+      os << a << " " << b;
+      REQUIRE(os.str() == "[] [3 3 3 3 3 3 3]");
     }
   }
 }

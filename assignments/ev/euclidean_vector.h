@@ -85,7 +85,7 @@ class EuclideanVector {
   double& operator[](int);
 
   /*
-   * Maths equals operators
+   * Maths (+ - * /) equals operators
    */
   EuclideanVector& operator+=(const EuclideanVector&);
   EuclideanVector& operator-=(const EuclideanVector&);
