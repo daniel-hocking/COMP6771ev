@@ -714,3 +714,250 @@ SCENARIO("15. Check that CreateUnitVector method works as expected") {
     }
   }
 }
+
+SCENARIO("16. Check that == and != works as expected") {
+  GIVEN("You have setup two default EuclideanVector") {
+    EuclideanVector a;
+    EuclideanVector b;
+    THEN("Check that they are considered equal") { REQUIRE(a == b); }
+    AND_THEN("Check that they are not considered unequal") { REQUIRE(!(a != b)); }
+  }
+  AND_GIVEN("You have setup two 0 dimension EuclideanVector") {
+    EuclideanVector a(0);
+    EuclideanVector b(0);
+    THEN("Check that they are considered equal") { REQUIRE(a == b); }
+    AND_THEN("Check that they are not considered unequal") { REQUIRE(!(a != b)); }
+  }
+  AND_GIVEN("You have setup two equal EuclideanVector") {
+    EuclideanVector a(4, -3.0);
+    EuclideanVector b(4, -3.0);
+    THEN("Check that they are considered equal") { REQUIRE(a == b); }
+    AND_THEN("Check that they are not considered unequal") { REQUIRE(!(a != b)); }
+  }
+  AND_GIVEN("You have setup two complex EuclideanVector") {
+    std::vector<double> l{2, 6, 5, -5, 3, 1};
+    EuclideanVector a{l.begin(), l.end()};
+    std::vector<double> l2{2, 6, 5, -5, 3, -1};
+    EuclideanVector b{l2.begin(), l2.end()};
+    THEN("Check that they are not considered equal") { REQUIRE(!(a == b)); }
+    AND_THEN("Check that they are considered unequal") { REQUIRE(a != b); }
+  }
+  AND_GIVEN("You have setup a EuclideanVector that you move assign to a different EV") {
+    EuclideanVector d(4, 5.0);
+    EuclideanVector e(4, 5.0);
+    THEN("Check that they are considered equal") { REQUIRE(d == e); }
+    AND_THEN("Check that they are not considered unequal") { REQUIRE(!(d != e)); }
+    e = std::move(d);
+    THEN("Check that they are not considered equal") { REQUIRE(!(d == e)); }
+    AND_THEN("Check that they are considered unequal") { REQUIRE(d != e); }
+  }
+  AND_GIVEN("You have setup two EuclideanVector same value but different length") {
+    EuclideanVector a(6, 3.0);
+    EuclideanVector b(4, 3.0);
+    THEN("Check that they are not considered equal") { REQUIRE(!(a == b)); }
+    AND_THEN("Check that they are considered unequal") { REQUIRE(a != b); }
+    THEN("Check that they are not considered equal (reverse order)") { REQUIRE(!(b == a)); }
+    AND_THEN("Check that they are considered unequal (reverse order)") { REQUIRE(b != a); }
+  }
+}
+
+SCENARIO("17. Check that the + and - operator work as expected") {
+  GIVEN("You have setup two simple EuclideanVector and add second to first") {
+    EuclideanVector a(3, 2.0);
+    EuclideanVector b(3, 3.0);
+    EuclideanVector c = a + b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 5.0);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      EuclideanVector d = c - b;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(d[j] == 2.0);
+      }
+    }
+  }
+  AND_GIVEN(
+      "You have setup two EuclideanVector with second being negative and add second to first") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(7, -3.0);
+    EuclideanVector c = a + b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(c[j] == 0.0);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      EuclideanVector d = c - b;
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(d[j] == 3.0);
+      }
+    }
+  }
+  AND_GIVEN("You have setup two complex EuclideanVector and add second to first") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    std::vector<double> l2{3, -1, 3, -7, -9};
+    EuclideanVector b{l2.begin(), l2.end()};
+    EuclideanVector c = a + b;
+    THEN("Check that result sum is correct") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(c[j] == l[j] + l2[j]);
+      }
+    }
+    AND_THEN("Check that subtracting b results in the original") {
+      EuclideanVector d = c - b;
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(d[j] == l[j]);
+      }
+    }
+  }
+  AND_GIVEN("You have setup two EuclideanVector that have different number of dimensions") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(5, 3.0);
+    THEN("Check that adding results in an exception") {
+      REQUIRE_THROWS_WITH(a + b, Contains("Dimensions of LHS"));
+    }
+    AND_THEN("Check that subtracting b results in an exception") {
+      REQUIRE_THROWS_WITH(a - b, Contains("Dimensions of LHS"));
+    }
+  }
+}
+
+SCENARIO("18. Check that * dot-product works as expected") {
+  GIVEN("You have setup two simple EuclideanVector and multiply first and second") {
+    EuclideanVector a(3, 2.0);
+    EuclideanVector b(3, 3.0);
+    double c = a * b;
+    THEN("Check that result product is correct") { REQUIRE(c == 18.0); }
+  }
+  AND_GIVEN("You have setup two EuclideanVector with second being negative and multiply first and "
+            "second") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(7, -3.0);
+    double c = a * b;
+    THEN("Check that result product is correct") { REQUIRE(c == -63.0); }
+  }
+  AND_GIVEN("You have setup two complex EuclideanVector and multiply first and second") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    std::vector<double> l2{3, -1, 3, -7, -9};
+    EuclideanVector b{l2.begin(), l2.end()};
+    double c = a * b;
+    THEN("Check that result product is correct") { REQUIRE(c == -36.0); }
+  }
+  AND_GIVEN("You have setup two EuclideanVector that have different number of dimensions") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector b(5, 3.0);
+    THEN("Check that multiplying results in an exception") {
+      REQUIRE_THROWS_WITH(a * b, Contains("Dimensions of LHS"));
+    }
+  }
+}
+
+SCENARIO("19. Check that * and / by scalar works as expected") {
+  GIVEN("You have setup a simple EuclideanVector and multiply by scalar") {
+    EuclideanVector a(3, 2.0);
+    EuclideanVector c = a * 3;
+    THEN("Check that result of multiplication is correct") {
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 6.0);
+      }
+    }
+    AND_THEN("Check that result of multiplication is correct in other order") {
+      c = 3 * a;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 6.0);
+      }
+    }
+    AND_THEN("Check that result of division is correct") {
+      c = a / 4;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 0.5);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector and negative scalar") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector c = a * -5;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(c[j] == -15.0);
+      }
+    }
+    AND_THEN("Check that result of multiplication is correct in other order") {
+      c = -5 * a;
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(c[j] == -15.0);
+      }
+    }
+    AND_THEN("Check that result of division is correct") {
+      c = a / -5;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == -0.6);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a complex EuclideanVector and scalar") {
+    std::vector<double> l{1, 2, 3, -5, 9};
+    EuclideanVector a{l.begin(), l.end()};
+    EuclideanVector c = a * 11;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(c[j] == l[j] * 11);
+      }
+    }
+    AND_THEN("Check that result of multiplication is correct in other order") {
+      c = 11 * a;
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(c[j] == l[j] * 11);
+      }
+    }
+    AND_THEN("Check that result of division is correct") {
+      c = a / 11;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == l[j] / 11);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector and scalar of 0") {
+    EuclideanVector a(5, 5.0);
+    EuclideanVector c = a * 0;
+    THEN("Check that multiplication results in 0") {
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(c[j] == 0.0);
+      }
+    }
+    AND_THEN("Check that multiplication results in 0 in other order") {
+      c = 0 * a;
+      for (int j = 0; j < 5; ++j) {
+        REQUIRE(c[j] == 0.0);
+      }
+    }
+    AND_THEN("Check that result of division is an error") {
+      REQUIRE_THROWS_WITH(a / 0, Contains("Invalid vector division by 0"));
+    }
+  }
+  AND_GIVEN("You have setup a EuclideanVector and fractional scalar") {
+    EuclideanVector a(7, 3.0);
+    EuclideanVector c = a * 1.5;
+    THEN("Check that result multiplication is correct") {
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(c[j] == 4.5);
+      }
+    }
+    AND_THEN("Check that result of multiplication is correct in other order") {
+      c = 1.5 * a;
+      for (int j = 0; j < 7; ++j) {
+        REQUIRE(c[j] == 4.5);
+      }
+    }
+    AND_THEN("Check that result of division is correct") {
+      c = a / 1.5;
+      for (int j = 0; j < 3; ++j) {
+        REQUIRE(c[j] == 2.0);
+      }
+    }
+  }
+}
