@@ -6,6 +6,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 class EuclideanVectorError : public std::exception {
@@ -58,7 +59,7 @@ class EuclideanVector {
    * Move constructor
    */
   EuclideanVector(EuclideanVector&& original) noexcept
-      : magnitudes_{std::move(original.magnitudes_)}, num_dim_{original.GetNumDimensions()} {
+    : magnitudes_{std::move(original.magnitudes_)}, num_dim_{original.GetNumDimensions()} {
     original.num_dim_ = 0;
   }
 
@@ -118,9 +119,7 @@ class EuclideanVector {
   /*
    * Return the value stored by num_dim_ member variable
    */
-  int GetNumDimensions() const noexcept {
-    return num_dim_;
-  }
+  int GetNumDimensions() const noexcept { return num_dim_; }
 
   /*
    * The Euclidean norm is the square root of the sum of the squares of the magnitudes in each
