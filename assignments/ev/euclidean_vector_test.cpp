@@ -129,7 +129,7 @@ SCENARIO("4. Check that the copy constructor returns a EuclideanVector that is a
 
     EuclideanVector c(3, 5.0);
     EuclideanVector d{c};
-    THEN("Check that d has been set to copy of euclidean vector c") {
+    AND_THEN("Check that d has been set to copy of euclidean vector c") {
       REQUIRE(d.GetNumDimensions() == c.GetNumDimensions());
       for (int j = 0; j < d.GetNumDimensions(); ++j) {
         CHECK(d.at(j) == c.at(j));
@@ -140,12 +140,34 @@ SCENARIO("4. Check that the copy constructor returns a EuclideanVector that is a
 
     EuclideanVector e(5, 7.7);
     EuclideanVector f = e;
-    THEN("Check that f has been set to copy of euclidean vector e using implicit call") {
+    AND_THEN("Check that f has been set to copy of euclidean vector e using implicit call") {
       REQUIRE(f.GetNumDimensions() == e.GetNumDimensions());
       for (int j = 0; j < f.GetNumDimensions(); ++j) {
         CHECK(f.at(j) == e.at(j));
       }
       REQUIRE_THROWS_WITH(f.at(e.GetNumDimensions()),
+                          Contains("is not valid for this EuclideanVector object"));
+    }
+
+    AND_THEN("Check that h has been set to copy of euclidean vector g where g is const") {
+      const EuclideanVector g(5, 7.7);
+      EuclideanVector h{g};
+      REQUIRE(h.GetNumDimensions() == g.GetNumDimensions());
+      for (int j = 0; j < h.GetNumDimensions(); ++j) {
+        CHECK(h.at(j) == g.at(j));
+      }
+      REQUIRE_THROWS_WITH(h.at(g.GetNumDimensions()),
+                          Contains("is not valid for this EuclideanVector object"));
+    }
+
+    AND_THEN("Check that h has been set to copy of euclidean vector g where h is const") {
+      EuclideanVector g(5, 7.7);
+      const EuclideanVector h{g};
+      REQUIRE(h.GetNumDimensions() == g.GetNumDimensions());
+      for (int j = 0; j < h.GetNumDimensions(); ++j) {
+        CHECK(h.at(j) == g.at(j));
+      }
+      REQUIRE_THROWS_WITH(h.at(g.GetNumDimensions()),
                           Contains("is not valid for this EuclideanVector object"));
     }
   }
@@ -192,6 +214,30 @@ SCENARIO("5. Check that the move constructor returns a EuclideanVector that is a
     AND_THEN("Check that e has been set to 0 dimensions") {
       REQUIRE(e.GetNumDimensions() == 0);
       REQUIRE_THROWS_WITH(e.at(0), Contains("is not valid for this EuclideanVector object"));
+    }
+
+    AND_THEN("Check that h has been set to copy of euclidean vector g where g is const") {
+      const EuclideanVector g(5, 7.7);
+      // Note this automatically calls copy constructor instead due to const
+      EuclideanVector h{std::move(g)};
+      REQUIRE(h.GetNumDimensions() == g.GetNumDimensions());
+      for (int j = 0; j < 5; ++j) {
+        CHECK(h.at(j) == g.at(j));
+      }
+    }
+
+    AND_THEN("Check that h has been set to copy of euclidean vector g where h is const") {
+      EuclideanVector g(5, 7.7);
+      const EuclideanVector h{std::move(g)};
+      REQUIRE(h.GetNumDimensions() == 5);
+      for (int j = 0; j < h.GetNumDimensions(); ++j) {
+        CHECK(h.at(j) == 7.7);
+      }
+      REQUIRE_THROWS_WITH(h.at(5), Contains("is not valid for this EuclideanVector object"));
+      AND_THEN("Check that g has been set to 0 dimensions") {
+        REQUIRE(g.GetNumDimensions() == 0);
+        REQUIRE_THROWS_WITH(g.at(0), Contains("is not valid for this EuclideanVector object"));
+      }
     }
   }
 }
