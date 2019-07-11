@@ -57,7 +57,10 @@ class EuclideanVector {
   /*
    * Move constructor
    */
-  EuclideanVector(EuclideanVector&&) noexcept;
+  EuclideanVector(EuclideanVector&& original) noexcept
+      : magnitudes_{std::move(original.magnitudes_)}, num_dim_{original.GetNumDimensions()} {
+    original.num_dim_ = 0;
+  }
 
   // END CONSTRUCTORS
 
@@ -87,8 +90,12 @@ class EuclideanVector {
   /*
    * Maths (+ - * /) equals operators
    */
-  EuclideanVector& operator+=(const EuclideanVector&);
-  EuclideanVector& operator-=(const EuclideanVector&);
+  EuclideanVector& operator+=(const EuclideanVector& rhs) {
+    return this->OperatorAddSubEquals(rhs, true);
+  }
+  EuclideanVector& operator-=(const EuclideanVector& rhs) {
+    return this->OperatorAddSubEquals(rhs, false);
+  }
   EuclideanVector& operator*=(double s) noexcept;
   EuclideanVector& operator/=(double s);
 
@@ -111,7 +118,9 @@ class EuclideanVector {
   /*
    * Return the value stored by num_dim_ member variable
    */
-  int GetNumDimensions() const noexcept;
+  int GetNumDimensions() const noexcept {
+    return num_dim_;
+  }
 
   /*
    * The Euclidean norm is the square root of the sum of the squares of the magnitudes in each

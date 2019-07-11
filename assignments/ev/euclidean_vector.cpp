@@ -31,11 +31,6 @@ EuclideanVector::EuclideanVector(const EuclideanVector& original) noexcept
   }
 }
 
-EuclideanVector::EuclideanVector(EuclideanVector&& original) noexcept
-  : magnitudes_{std::move(original.magnitudes_)}, num_dim_{original.GetNumDimensions()} {
-  original.num_dim_ = 0;
-}
-
 EuclideanVector& EuclideanVector::operator=(const EuclideanVector& original) noexcept {
   num_dim_ = original.GetNumDimensions();
   magnitudes_ = std::make_unique<double[]>(this->GetNumDimensions());
@@ -81,14 +76,6 @@ EuclideanVector& EuclideanVector::OperatorAddSubEquals(const EuclideanVector& rh
   }
 
   return *this;
-}
-
-EuclideanVector& EuclideanVector::operator+=(const EuclideanVector& rhs) {
-  return this->OperatorAddSubEquals(rhs, true);
-}
-
-EuclideanVector& EuclideanVector::operator-=(const EuclideanVector& rhs) {
-  return this->OperatorAddSubEquals(rhs, false);
 }
 
 EuclideanVector& EuclideanVector::operator*=(const double scalar) noexcept {
@@ -147,10 +134,6 @@ double& EuclideanVector::at(const int i) {
   }
 
   return magnitudes_[i];
-}
-
-int EuclideanVector::GetNumDimensions() const noexcept {
-  return num_dim_;
 }
 
 double EuclideanVector::GetEuclideanNorm() const {
