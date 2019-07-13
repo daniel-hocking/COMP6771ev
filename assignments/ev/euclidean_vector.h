@@ -103,8 +103,8 @@ class EuclideanVector {
   /*
    * Explicit type conversions
    */
-  explicit operator std::vector<double>() noexcept;
-  explicit operator std::list<double>() noexcept;
+  explicit operator std::vector<double>() const noexcept;
+  explicit operator std::list<double>() const noexcept;
 
   // END OPERATORS
 
@@ -131,7 +131,7 @@ class EuclideanVector {
    * Returns a unit vector for the given Euclidean vector, a unit vector is found by dividing
    * each magnitude by the Euclidean norm
    */
-  EuclideanVector CreateUnitVector();
+  EuclideanVector CreateUnitVector() const;
 
   // END METHODS
 

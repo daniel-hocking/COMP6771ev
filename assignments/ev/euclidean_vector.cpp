@@ -98,7 +98,7 @@ EuclideanVector& EuclideanVector::operator/=(const double scalar) {
   return *this;
 }
 
-EuclideanVector::operator std::vector<double>() noexcept {
+EuclideanVector::operator std::vector<double>() const noexcept {
   auto vector_ev = std::vector<double>();
 
   for (int j = 0; j < this->GetNumDimensions(); j++) {
@@ -108,7 +108,7 @@ EuclideanVector::operator std::vector<double>() noexcept {
   return vector_ev;
 }
 
-EuclideanVector::operator std::list<double>() noexcept {
+EuclideanVector::operator std::list<double>() const noexcept {
   auto list_ev = std::list<double>();
 
   for (int j = 0; j < this->GetNumDimensions(); j++) {
@@ -149,7 +149,7 @@ double EuclideanVector::GetEuclideanNorm() const {
   return std::sqrt(sums);
 }
 
-EuclideanVector EuclideanVector::CreateUnitVector() {
+EuclideanVector EuclideanVector::CreateUnitVector() const {
   if (this->GetNumDimensions() == 0) {
     throw EuclideanVectorError{"EuclideanVector with no dimensions does not have a unit vector"};
   }

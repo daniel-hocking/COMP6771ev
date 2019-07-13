@@ -529,7 +529,12 @@ SCENARIO("11. Check that type conversion operator work as expected") {
   GIVEN("You have setup a default EuclideanVector") {
     EuclideanVector a;
     THEN("Check that conversion to vector is correct") {
-      REQUIRE(static_cast<std::vector<double>>(a) == std::vector<double>{0.0});
+      auto vector_a = static_cast<std::vector<double>>(a);
+      REQUIRE(vector_a == std::vector<double>{0.0});
+      AND_THEN("Check that vector can still be modified despite const on operator") {
+        vector_a[0] = 5;
+        REQUIRE(vector_a[0] == 5);
+      }
     }
     AND_THEN("Check that conversion to list is correct") {
       REQUIRE(static_cast<std::list<double>>(a) == std::list<double>{0.0});
@@ -537,6 +542,15 @@ SCENARIO("11. Check that type conversion operator work as expected") {
   }
   AND_GIVEN("You have setup a EuclideanVector") {
     EuclideanVector a(7, 3.0);
+    THEN("Check that conversion to vector is correct") {
+      REQUIRE(static_cast<std::vector<double>>(a) == std::vector<double>(7, 3.0));
+    }
+    AND_THEN("Check that conversion to list is correct") {
+      REQUIRE(static_cast<std::list<double>>(a) == std::list<double>(7, 3.0));
+    }
+  }
+  AND_GIVEN("You have setup a const EuclideanVector") {
+    const EuclideanVector a(7, 3.0);
     THEN("Check that conversion to vector is correct") {
       REQUIRE(static_cast<std::vector<double>>(a) == std::vector<double>(7, 3.0));
     }
@@ -637,6 +651,10 @@ SCENARIO("13. Check that GetNumDimensions method works as expected") {
     EuclideanVector a(7, 3.0);
     THEN("Check that it has 7 dimensions") { REQUIRE(a.GetNumDimensions() == 7); }
   }
+  AND_GIVEN("You have setup a const EuclideanVector") {
+    const EuclideanVector a(7, 3.0);
+    THEN("Check that it has 7 dimensions") { REQUIRE(a.GetNumDimensions() == 7); }
+  }
   AND_GIVEN("You have setup a complex EuclideanVector") {
     std::vector<double> l{1, 2, 3, -5, 9};
     int size = static_cast<int>(l.size());
@@ -681,6 +699,10 @@ SCENARIO("14. Check that GetEuclideanNorm method works as expected") {
     EuclideanVector a(4, 3.0);
     THEN("Check that it has euclidean norm of 6") { REQUIRE(a.GetEuclideanNorm() == 6.0); }
   }
+  AND_GIVEN("You have setup a const EuclideanVector") {
+    const EuclideanVector a(4, 3.0);
+    THEN("Check that it has euclidean norm of 6") { REQUIRE(a.GetEuclideanNorm() == 6.0); }
+  }
   AND_GIVEN("You have setup a complex EuclideanVector") {
     std::vector<double> l{2, 6, 5, -5, 3, 1};
     EuclideanVector a{l.begin(), l.end()};
@@ -720,6 +742,15 @@ SCENARIO("15. Check that CreateUnitVector method works as expected") {
   }
   AND_GIVEN("You have setup a EuclideanVector and found the unit vector") {
     EuclideanVector a(4, 3.0);
+    EuclideanVector b = a.CreateUnitVector();
+    THEN("Check that unit vector has magnitudes of 0.5") {
+      for (int j = 0; j < 4; ++j) {
+        REQUIRE(b.at(j) == 0.5);
+      }
+    }
+  }
+  AND_GIVEN("You have setup a const EuclideanVector and found the unit vector") {
+    const EuclideanVector a(4, 3.0);
     EuclideanVector b = a.CreateUnitVector();
     THEN("Check that unit vector has magnitudes of 0.5") {
       for (int j = 0; j < 4; ++j) {
@@ -778,6 +809,12 @@ SCENARIO("16. Check that == and != works as expected") {
   AND_GIVEN("You have setup two equal EuclideanVector") {
     EuclideanVector a(4, -3.0);
     EuclideanVector b(4, -3.0);
+    THEN("Check that they are considered equal") { REQUIRE(a == b); }
+    AND_THEN("Check that they are not considered unequal") { REQUIRE(!(a != b)); }
+  }
+  AND_GIVEN("You have setup two equal EuclideanVector but one is const") {
+    EuclideanVector a(4, -3.0);
+    const EuclideanVector b(4, -3.0);
     THEN("Check that they are considered equal") { REQUIRE(a == b); }
     AND_THEN("Check that they are not considered unequal") { REQUIRE(!(a != b)); }
   }
